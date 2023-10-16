@@ -1,5 +1,6 @@
 package es.in2.wallet.wca.controller
 
+import es.in2.wallet.api.model.dto.QrContentDTO
 import es.in2.wallet.wca.model.dto.CredentialRequestDTO
 import es.in2.wallet.wca.service.VerifiableCredentialService
 import io.swagger.v3.oas.annotations.Operation
@@ -27,5 +28,16 @@ class VerifiableCredentialController(
     ])
     fun getVC(@RequestBody credentialRequestDTO: CredentialRequestDTO){
         verifiableCredentialService.getVerifiableCredential(credentialRequestDTO)
+    }
+    @PostMapping("/issuer-metadata")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Credential data successfully saved."),
+        ApiResponse(responseCode = "400", description = "Invalid request."),
+        ApiResponse(responseCode = "403", description = "Access token has expired"),
+        ApiResponse(responseCode = "500", description = "Internal server error.")
+    ])
+    fun getCredentialIssuerMetadata(@RequestBody qrContentDTO: QrContentDTO){
+        verifiableCredentialService.getCredentialIssuerMetadata(qrContentDTO.content)
     }
 }

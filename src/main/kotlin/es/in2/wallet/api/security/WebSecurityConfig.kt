@@ -53,8 +53,8 @@ class WebSecurityConfig(
             }
             authorizeRequests {
                 authorize(HttpMethod.POST, "/api/users", permitAll)
-                authorize(HttpMethod.GET, "/api/**", authenticated)
-                authorize(HttpMethod.POST, "/api/**", authenticated)
+                //authorize(HttpMethod.GET, "/api/**", authenticated)
+                //authorize(HttpMethod.POST, "/api/**", authenticated)
             }
             addFilterAt<JWTAuthenticationFilter>(
                 JWTAuthenticationFilter(authenticationManager(), walletDidKeyGenerator, walletKeyService, appUserService)
@@ -94,6 +94,8 @@ class WebSecurityConfig(
             "http://localhost:8081",
             "http://localhost:8082",
             "http://localhost:8083",
+            "http://localhost:8084",
+            "http://localhost:8085",
             "http://localhost:4200",
             "http://localhost:4201",
             "http://localhost:4202",
