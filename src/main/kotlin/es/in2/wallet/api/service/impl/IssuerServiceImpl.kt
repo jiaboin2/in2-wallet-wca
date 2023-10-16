@@ -14,7 +14,7 @@ class IssuerServiceImpl(
     private val issuerRepository: IssuerRepository,
 ) : IssuerService {
 
-    private val log: Logger = LoggerFactory.getLogger(AppUserServiceImpl::class.java)
+    private val log: Logger = LoggerFactory.getLogger(IssuerServiceImpl::class.java)
 
     /**
      * Inserts or updates Credential Issuer Metadata on an SQL table
