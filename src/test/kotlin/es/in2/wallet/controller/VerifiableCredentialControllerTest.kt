@@ -37,12 +37,12 @@ class VerifiableCredentialControllerTest {
 
     @BeforeEach
     fun setup() {
-        MockitoAnnotations.openMocks(SiopControllerTest::class.java)
+        MockitoAnnotations.openMocks(VerifiableCredentialControllerTest::class.java)
         mockMvc = MockMvcBuilders.standaloneSetup(verifiableCredentialController).build()
     }
 
     @Test
-    fun `getVC should return 200 OK`() {
+    fun `getVC should return 201 OK`() {
         val credentialRequestDTO = CredentialRequestDTO(issuerName = "issuerName", did = "key")
 
         Mockito.doNothing().`when`(verifiableCredentialService).getVerifiableCredential(credentialRequestDTO)
@@ -56,20 +56,20 @@ class VerifiableCredentialControllerTest {
 
     }
 
-    //TODO - Arreglar test. Lanza error 400
-//    @Test
-//    fun `getCredentialIssuerMetadata should return 201 OK`() {
-//        val qrContentDTO = QrContentDTO(content = "http://issuer-api:8081/credential-offer?credential_offer_uri=http://issuer-api:8081/credential-offer/k-un2ZiMSiKEpXQXqKScPg")
-//
-//        Mockito.doNothing().`when`(verifiableCredentialService).getCredentialIssuerMetadata( "{\"qr_content\":\"${qrContentDTO.content}\"}")
-//
-//        mockMvc.perform(
-//                MockMvcRequestBuilders.post("/api/credentials/issuer-metadata")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(ObjectMapper().writeValueAsString(qrContentDTO))
-//        )
-//                .andExpect(MockMvcResultMatchers.status().isCreated)
-//
-//    }
+    @Test
+    fun `getCredentialIssuerMetadata should return 201 OK`() {
+
+        val qrContentDTO = QrContentDTO(content = "http://issuer-api:8081/credential-offer?credential_offer_uri=http://issuer-api:8081/credential-offer/k-un2ZiMSiKEpXQXqKScPg")
+
+        Mockito.doNothing().`when`(verifiableCredentialService).getCredentialIssuerMetadata("{\"qr_content\":\"${qrContentDTO.content}\"}")
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/credentials/issuer-metadata")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"qr_content\":\"$qrContentDTO.content\"}")
+        )
+            .andExpect(MockMvcResultMatchers.status().isCreated)
+
+    }
 
 }
