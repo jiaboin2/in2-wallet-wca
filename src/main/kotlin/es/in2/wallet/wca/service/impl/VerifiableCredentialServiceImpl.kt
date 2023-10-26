@@ -18,7 +18,6 @@ import es.in2.wallet.api.util.ApplicationUtils.buildUrlEncodedFormDataRequestBod
 import es.in2.wallet.api.util.ApplicationUtils.getRequest
 import es.in2.wallet.api.util.ApplicationUtils.postRequest
 import es.in2.wallet.api.util.ApplicationUtils.toJsonString
-import es.in2.wallet.integration.orion.service.OrionService
 import es.in2.wallet.wca.service.CredentialRequestDataService
 import es.in2.wallet.api.service.IssuerService
 import es.in2.wallet.wca.util.W3CContextDeserializer
@@ -34,6 +33,7 @@ import id.walt.credentials.w3c.W3CIssuer
 import id.walt.credentials.w3c.templates.VcTemplate
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -42,7 +42,7 @@ import java.util.*
 
 @Service
 class VerifiableCredentialServiceImpl(
-    private val orionService: OrionService,
+    @Value("\${app.url.orion-service-baseurl}") private val orionServiceBaseUrl: String,
     private val issuerDataService: IssuerService,
     private val credentialRequestDataService: CredentialRequestDataService,
     private val walletKeyService: WalletKeyService
@@ -53,8 +53,11 @@ class VerifiableCredentialServiceImpl(
 
     override fun getCredentialIssuerMetadata(credentialOfferUriExtended: String) {
         val credentialOfferUri = getCredentialOfferUri(credentialOfferUriExtended)
+
         val credentialOffer = getCredentialOffer(credentialOfferUri)
+
         val credentialIssuerMetadataUri = getCredentialIssuerMetadataUri(credentialOffer)
+
         try {
             val credentialIssuerMetadataObject = getCredentialIssuerMetadataObject(credentialIssuerMetadataUri)
             issuerDataService.upsertIssuerData(
@@ -103,7 +106,9 @@ class VerifiableCredentialServiceImpl(
         val credential = verifiableCredentialResponseDTO.credential
         log.debug("verifiable credential: $credential")
         // save the verifiable credential
-        orionService.saveVC(credential)
+        //orionService.saveVC(credential)
+        val headers = listOf( CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON)
+        postRequest(url = orionServiceBaseUrl, headers = headers, body = credential)
     }
 
     /**
