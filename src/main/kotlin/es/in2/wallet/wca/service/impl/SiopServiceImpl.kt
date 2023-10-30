@@ -2,14 +2,12 @@ package es.in2.wallet.wca.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nimbusds.jose.JWSObject
-import es.in2.wallet.api.util.*
 import es.in2.wallet.wca.model.dto.VcSelectorRequestDTO
 import es.in2.wallet.wca.model.dto.VcSelectorResponseDTO
-import es.in2.wallet.integration.orion.service.OrionService
-import es.in2.wallet.wca.model.dto.CredentialOfferForPreAuthorizedCodeFlow
 import es.in2.wallet.wca.model.dto.VcBasicDataDTO
 import es.in2.wallet.wca.service.SiopService
 import es.in2.wallet.wca.service.TokenVerificationService
+import es.in2.wallet.wca.util.*
 import id.walt.credentials.w3c.VerifiablePresentation
 import id.walt.model.dif.DescriptorMapping
 import id.walt.model.dif.PresentationSubmission

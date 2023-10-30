@@ -1,12 +1,11 @@
 package es.in2.wallet.wca.controller
 
-import es.in2.wallet.api.model.dto.QrContentDTO
+import es.in2.wallet.wca.model.dto.QrContentDTO
 import es.in2.wallet.wca.model.dto.VcSelectorRequestDTO
 import es.in2.wallet.wca.service.SiopService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.websocket.server.PathParam
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 

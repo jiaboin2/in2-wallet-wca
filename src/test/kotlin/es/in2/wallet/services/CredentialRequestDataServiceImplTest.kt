@@ -2,9 +2,9 @@ package es.in2.wallet.services
 
 import es.in2.wallet.wca.model.entity.CredentialRequestData
 import es.in2.wallet.wca.exception.CredentialRequestDataNotFoundException
-import es.in2.wallet.api.model.entity.AppUser
+import es.in2.wallet.wca.model.entity.AppUser
 import es.in2.wallet.wca.model.repository.CredentialRequestDataRepository
-import es.in2.wallet.api.service.AppUserService
+import es.in2.wallet.wca.service.AppUserService
 import es.in2.wallet.wca.service.impl.CredentialRequestDataServiceImpl
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

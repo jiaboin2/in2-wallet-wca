@@ -1,7 +1,7 @@
 package es.in2.wallet.controller
 
 import es.in2.wallet.wca.exception.DidVerificationException
-import es.in2.wallet.api.security.exception.InvalidTokenException
+import es.in2.wallet.wca.exception.InvalidTokenException
 import es.in2.wallet.wca.exception.JwtInvalidFormatException
 import es.in2.wallet.wca.exception.handler.WcaExceptionHandler
 import org.assertj.core.api.Assertions

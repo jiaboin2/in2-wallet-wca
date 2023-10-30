@@ -1,9 +1,9 @@
 package es.in2.wallet.wca.service.impl
 
 import es.in2.wallet.wca.exception.CredentialRequestDataNotFoundException
-import es.in2.wallet.api.service.AppUserService
 import es.in2.wallet.wca.model.repository.CredentialRequestDataRepository
 import es.in2.wallet.wca.model.entity.CredentialRequestData
+import es.in2.wallet.wca.service.AppUserService
 import es.in2.wallet.wca.service.CredentialRequestDataService
 import jakarta.transaction.Transactional
 import org.slf4j.Logger

@@ -2,11 +2,10 @@ package es.in2.wallet.controller
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import es.in2.wallet.api.model.dto.QrContentDTO
+import es.in2.wallet.wca.model.dto.QrContentDTO
 import es.in2.wallet.wca.controller.VerifiableCredentialController
 import es.in2.wallet.wca.model.dto.CredentialRequestDTO
 import es.in2.wallet.wca.service.VerifiableCredentialService
-import es.in2.wallet.wca.service.impl.VerifiableCredentialServiceImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks

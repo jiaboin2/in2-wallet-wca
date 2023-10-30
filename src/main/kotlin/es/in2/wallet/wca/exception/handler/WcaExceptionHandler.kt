@@ -1,6 +1,6 @@
 package es.in2.wallet.wca.exception.handler
 
-import es.in2.wallet.api.security.exception.InvalidTokenException
+import es.in2.wallet.wca.exception.InvalidTokenException
 import es.in2.wallet.wca.exception.DidVerificationException
 import es.in2.wallet.wca.exception.JwtInvalidFormatException
 import org.slf4j.Logger

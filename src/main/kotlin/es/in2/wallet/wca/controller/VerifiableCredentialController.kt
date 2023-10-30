@@ -1,6 +1,6 @@
 package es.in2.wallet.wca.controller
 
-import es.in2.wallet.api.model.dto.QrContentDTO
+import es.in2.wallet.wca.model.dto.QrContentDTO
 import es.in2.wallet.wca.model.dto.CredentialRequestDTO
 import es.in2.wallet.wca.service.VerifiableCredentialService
 import io.swagger.v3.oas.annotations.Operation

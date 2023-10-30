@@ -1,19 +1,14 @@
 package es.in2.wallet.wca.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jwt.SignedJWT
-import es.in2.wallet.api.util.ApplicationUtils
-import es.in2.wallet.api.util.CONTENT_TYPE
-import es.in2.wallet.api.util.CONTENT_TYPE_APPLICATION_JSON
+import es.in2.wallet.wca.util.ApplicationUtils
+import es.in2.wallet.wca.util.CONTENT_TYPE
+import es.in2.wallet.wca.util.CONTENT_TYPE_APPLICATION_JSON
 import es.in2.wallet.wca.model.dto.VcSelectorResponseDTO
-import es.in2.wallet.integration.orion.service.OrionService
-import es.in2.wallet.wca.service.SiopService
 import es.in2.wallet.wca.service.VerifiablePresentationService
-import es.in2.wallet.api.util.VC_JWT
-import es.in2.wallet.wca.model.dto.VcBasicDataDTO
+import es.in2.wallet.wca.util.VC_JWT
 import es.in2.wallet.wca.model.dto.VerifiableCredentialByIdAndFormatRequestDTO
-import es.in2.wallet.wca.service.WalletDidService
 import es.in2.wallet.wca.util.GET_DID_KEY
 import id.walt.credentials.w3c.PresentableCredential
 import id.walt.credentials.w3c.VerifiableCredential
