@@ -1,6 +1,6 @@
 spring:
   application:
-    name: WalletAPI
+    name: WalletWCA
   datasource:
     url: jdbc:h2:mem:dbtest
     driver-class-name: org.h2.Driver
@@ -31,6 +31,7 @@ in2:
 app:
   url:
     api: http://localhost:8083
-    orion_service_baseurl: http://localhost:8085/api/personal-data-space       # TODO change
+    orion_service_baseurl: http://localhost:8085/api/credentials
+    didKey-service-baseurl: http://localhost:8087/api/dids
     orion_context_broker: http://localhost:1026/v2/entities
 

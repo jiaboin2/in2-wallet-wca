@@ -1,11 +1,8 @@
 package es.in2.wallet.controller
 
-import es.in2.wallet.api.controller.QrCodeProcessorController
-import es.in2.wallet.api.service.QrCodeProcessorService
 import es.in2.wallet.wca.controller.SiopController
 import es.in2.wallet.wca.model.dto.VcBasicDataDTO
 import es.in2.wallet.wca.model.dto.VcSelectorRequestDTO
-import es.in2.wallet.wca.model.dto.VcSelectorResponseDTO
 import es.in2.wallet.wca.service.SiopService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

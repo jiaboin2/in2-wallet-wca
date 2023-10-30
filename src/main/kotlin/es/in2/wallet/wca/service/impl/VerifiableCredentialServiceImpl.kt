@@ -1,6 +1,5 @@
 package es.in2.wallet.wca.service.impl
 
-import es.in2.wallet.wca.util.VcTemplateDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
@@ -20,13 +19,11 @@ import es.in2.wallet.api.util.ApplicationUtils.postRequest
 import es.in2.wallet.api.util.ApplicationUtils.toJsonString
 import es.in2.wallet.wca.service.CredentialRequestDataService
 import es.in2.wallet.api.service.IssuerService
-import es.in2.wallet.wca.util.W3CContextDeserializer
-import es.in2.wallet.wca.util.W3CCredentialSchemaDeserializer
-import es.in2.wallet.wca.util.W3CIssuerDeserializer
 import es.in2.wallet.wca.exception.CredentialRequestDataNotFoundException
 import es.in2.wallet.wca.model.dto.*
 import es.in2.wallet.wca.service.VerifiableCredentialService
 import es.in2.wallet.wca.service.WalletKeyService
+import es.in2.wallet.wca.util.*
 import id.walt.credentials.w3c.W3CContext
 import id.walt.credentials.w3c.W3CCredentialSchema
 import id.walt.credentials.w3c.W3CIssuer
@@ -43,9 +40,9 @@ import java.util.*
 @Service
 class VerifiableCredentialServiceImpl(
     @Value("\${app.url.orion-service-baseurl}") private val orionServiceBaseUrl: String,
+    @Value("\${app.url.didKey-service-baseurl}") private val didKeyServiceBaseUrl: String,
     private val issuerDataService: IssuerService,
-    private val credentialRequestDataService: CredentialRequestDataService,
-    private val walletKeyService: WalletKeyService
+    private val credentialRequestDataService: CredentialRequestDataService
 
 ) : VerifiableCredentialService {
 
@@ -106,7 +103,6 @@ class VerifiableCredentialServiceImpl(
         val credential = verifiableCredentialResponseDTO.credential
         log.debug("verifiable credential: $credential")
         // save the verifiable credential
-        //orionService.saveVC(credential)
         val headers = listOf( CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON)
         postRequest(url = orionServiceBaseUrl, headers = headers, body = credential)
     }
@@ -231,8 +227,15 @@ class VerifiableCredentialServiceImpl(
     }
 
     private fun createJwt(credentialRequestDTO: CredentialRequestDTO): String {
-        val ecJWK: ECKey = walletKeyService.getECKeyFromKid(credentialRequestDTO.did)
+        val url = didKeyServiceBaseUrl + GET_DID_KEY
+        val headers = listOf( CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON)
+        val response : String = postRequest(url=url, headers = headers, body = credentialRequestDTO.did)
+        val valueTypeRef = ObjectMapper().typeFactory.constructType(ECKey::class.java)
+        val ecJWK: ECKey = ObjectMapper().readValue(response, valueTypeRef)
+        log.debug("ECKey: {}", ecJWK)
+
         val signer: JWSSigner = ECDSASigner(ecJWK)
+
         val header = createJwtHeader(credentialRequestDTO.did)
         val payload = createJwtPayload(credentialRequestDTO.issuerName)
         val signedJWT = SignedJWT(header, payload)

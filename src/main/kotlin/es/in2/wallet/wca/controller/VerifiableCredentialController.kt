@@ -31,6 +31,10 @@ class VerifiableCredentialController(
     }
     @PostMapping("/issuer-metadata")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(
+            summary = "Get Credential Issuer Metadata",
+            description = "Get the Issuer Metadata of the credential"
+    )
     @ApiResponses(value = [
         ApiResponse(responseCode = "201", description = "Credential data successfully saved."),
         ApiResponse(responseCode = "400", description = "Invalid request."),
