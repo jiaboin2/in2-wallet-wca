@@ -8,5 +8,4 @@ import java.util.*
 @Repository
 interface AppUserRepository : CrudRepository<AppUser, UUID> {
     fun findAppUserByUsername(username: String): Optional<AppUser>
-    fun findAppUserByEmail(email: String): Optional<AppUser>
 }

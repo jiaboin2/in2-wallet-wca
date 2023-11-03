@@ -16,13 +16,13 @@ class SiopController (
 ){
 
     @PostMapping()
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @Operation(
         summary = "Siop Authentication Request",
         description = "Get Siop Authentication Request"
     )
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Authentication data successfully saved."),
+        ApiResponse(responseCode = "201", description = "Authentication data retrieved."),
         ApiResponse(responseCode = "400", description = "Invalid request."),
         ApiResponse(responseCode = "403", description = "Access token has expired"),
         ApiResponse(responseCode = "500", description = "Internal server error.")
@@ -32,13 +32,13 @@ class SiopController (
     }
 
     @PostMapping("/process")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @Operation(
         summary = "Siop Authentication Request",
         description = "Process Siop Authentication Request"
     )
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Authentication data successfully saved."),
+        ApiResponse(responseCode = "201", description = "Authentication data retrieved."),
         ApiResponse(responseCode = "400", description = "Invalid request."),
         ApiResponse(responseCode = "403", description = "Access token has expired"),
         ApiResponse(responseCode = "500", description = "Internal server error.")

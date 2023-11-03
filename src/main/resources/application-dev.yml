@@ -30,7 +30,7 @@ app:
   url:
     api: https://walletapidev.in2.es
     orion_service_baseurl: http://localhost:8085/api/credentials
-    didKey-service-baseurl: http://localhost:8087/api/dids
+    didKey-service-baseurl: http://localhost:8089/api/dids
     orion_context_broker: http://wallet-orion:1026/v2/entities
 
 # Logging configuration
