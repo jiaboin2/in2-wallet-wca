@@ -14,6 +14,7 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import org.springframework.test.web.servlet.MockMvc
@@ -43,11 +44,13 @@ class VerifiableCredentialControllerTest {
     @Test
     fun `getVC should return 201 OK`() {
         val credentialRequestDTO = CredentialRequestDTO(issuerName = "issuerName", did = "key")
+        val token = "token"
 
-        Mockito.doNothing().`when`(verifiableCredentialService).getVerifiableCredential(credentialRequestDTO)
+        Mockito.doNothing().`when`(verifiableCredentialService).getVerifiableCredential(credentialRequestDTO, token)
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/credentials")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ObjectMapper().writeValueAsString(credentialRequestDTO))
         )
@@ -59,11 +62,12 @@ class VerifiableCredentialControllerTest {
     fun `getCredentialIssuerMetadata should return 201 OK`() {
 
         val qrContentDTO = QrContentDTO(content = "http://issuer-api:8081/credential-offer?credential_offer_uri=http://issuer-api:8081/credential-offer/k-un2ZiMSiKEpXQXqKScPg")
-
-        Mockito.doNothing().`when`(verifiableCredentialService).getCredentialIssuerMetadata("{\"qr_content\":\"${qrContentDTO.content}\"}")
+        val token = "token"
+        Mockito.doNothing().`when`(verifiableCredentialService).getCredentialIssuerMetadata("{\"qr_content\":\"${qrContentDTO.content}\"}", token)
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/credentials/issuer-metadata")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"qr_content\":\"$qrContentDTO.content\"}")
         )

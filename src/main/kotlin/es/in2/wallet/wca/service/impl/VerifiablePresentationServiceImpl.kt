@@ -2,14 +2,10 @@ package es.in2.wallet.wca.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nimbusds.jwt.SignedJWT
-import es.in2.wallet.wca.util.ApplicationUtils
-import es.in2.wallet.wca.util.CONTENT_TYPE
-import es.in2.wallet.wca.util.CONTENT_TYPE_APPLICATION_JSON
 import es.in2.wallet.wca.model.dto.VcSelectorResponseDTO
 import es.in2.wallet.wca.service.VerifiablePresentationService
-import es.in2.wallet.wca.util.VC_JWT
 import es.in2.wallet.wca.model.dto.VerifiableCredentialByIdAndFormatRequestDTO
-import es.in2.wallet.wca.util.GET_DID_KEY
+import es.in2.wallet.wca.util.*
 import id.walt.credentials.w3c.PresentableCredential
 import id.walt.credentials.w3c.VerifiableCredential
 import id.walt.custodian.Custodian
@@ -21,23 +17,27 @@ import java.time.Instant
 
 @Service
 class VerifiablePresentationServiceImpl(
-    @Value("\${app.url.orion-service-baseurl}") private val orionServiceBaseUrl: String,
-    @Value("\${app.url.didKey-service-baseurl}") private val didKeyServiceBaseUrl: String
+    @Value("\${app.url.wallet-data-baseurl}") private val walletDataBaseUrl: String,
+    @Value("\${app.url.wallet-crypto-baseurl}") private val walletCryptoBaseUrl: String,
 ) : VerifiablePresentationService {
 
     private val log: Logger = LogManager.getLogger(VerifiablePresentationServiceImpl::class.java)
 
-    override fun createVerifiablePresentation(vcSelectorResponseDTO: VcSelectorResponseDTO): String {
+    override fun createVerifiablePresentation(vcSelectorResponseDTO: VcSelectorResponseDTO, token: String): String {
 
         // Get vc_jwt list from the selected list of VCs received
         val verifiableCredentialsList = mutableListOf<PresentableCredential>()
         vcSelectorResponseDTO.selectedVcList.forEach {
-            val headers = listOf( CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON)
+            val url = walletCryptoBaseUrl + GET_VC_BY_ID_FORMAT
+            val headers = listOf(
+                CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON,
+                HEADER_AUTHORIZATION to "Bearer $token"
+            )
             val vc = parserVerifiableCredentialIdAndFormatRequestToString(VerifiableCredentialByIdAndFormatRequestDTO(
                 id = it.id,
                 format = VC_JWT
             ))
-            val response = ApplicationUtils.postRequest(url = orionServiceBaseUrl, headers = headers, body = vc)
+            val response = ApplicationUtils.postRequest(url = url, headers = headers, body = vc)
             log.info("verifiable credential by Id and Format = {}", response)
             verifiableCredentialsList.add(
                 PresentableCredential(
@@ -55,8 +55,11 @@ class VerifiablePresentationServiceImpl(
             subject_id of, at least, one of the VCs attached.
             That VP MUST be signed using the PrivateKey related with the holderDID.
          */
-        val url = didKeyServiceBaseUrl + GET_DID_KEY
-        val headers = listOf( CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON)
+        val url = walletCryptoBaseUrl + GET_DID_KEY
+        val headers = listOf(
+            CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON,
+            HEADER_AUTHORIZATION to "Bearer $token"
+        )
         val holderDid = ApplicationUtils.postRequest(url = url, headers = headers, body = "")
 
         /*

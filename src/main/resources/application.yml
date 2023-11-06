@@ -31,7 +31,7 @@ in2:
 app:
   url:
     api: http://localhost:8083
-    orion_service_baseurl: http://localhost:8085/api/credentials
-    didKey-service-baseurl: http://localhost:8089/api/dids
+    wallet-data-baseurl: http://localhost:8086
+    wallet-crypto-baseurl: http://localhost:8089
     orion_context_broker: http://localhost:1026/v2/entities
 

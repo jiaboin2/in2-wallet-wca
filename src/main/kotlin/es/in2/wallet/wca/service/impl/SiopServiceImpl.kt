@@ -2,9 +2,7 @@ package es.in2.wallet.wca.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nimbusds.jose.JWSObject
-import es.in2.wallet.wca.model.dto.VcSelectorRequestDTO
-import es.in2.wallet.wca.model.dto.VcSelectorResponseDTO
-import es.in2.wallet.wca.model.dto.VcBasicDataDTO
+import es.in2.wallet.wca.model.dto.*
 import es.in2.wallet.wca.service.SiopService
 import es.in2.wallet.wca.service.TokenVerificationService
 import es.in2.wallet.wca.util.*
@@ -16,9 +14,10 @@ import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
+
 @Service
 class SiopServiceImpl(
-    @Value("\${app.url.orion-service-baseurl}") private val orionServiceBaseUrl: String,
+    @Value("\${app.url.wallet-data-baseurl}") private val walletDataBaseUrl: String,
     private val tokenVerificationService: TokenVerificationService,
     private val applicationUtils: ApplicationUtils
 ) : SiopService {
@@ -29,7 +28,7 @@ class SiopServiceImpl(
      * This method executes the siop_authentication_request_uri to get a SIOP Authentication Request
      * as a JWT in JWS format.
      */
-    override fun getSiopAuthenticationRequest(siopAuthenticationRequestUri: String): VcSelectorRequestDTO {
+    override fun getSiopAuthenticationRequest(siopAuthenticationRequestUri: String, token: String): VcSelectorRequestDTO {
         log.info("SiopServiceImpl.getSiopAuthenticationRequest()")
 
         // get SIOP Authentication Request as JWT in JWS form by executing the received URI
@@ -41,7 +40,7 @@ class SiopServiceImpl(
         // Extract "auth_request" of the JWT which contains the SIOP Authentication Request
         val siopAuthenticationRequest = getAuthRequestClaim(jwtSiopAuthRequest)
 
-        return processSiopAuthenticationRequest(siopAuthenticationRequest)
+        return processSiopAuthenticationRequest(siopAuthenticationRequest, token)
     }
 
     private fun getSiopAuthenticationRequestInJwsFormat(siopAuthenticationRequestUri: String): String {
@@ -53,34 +52,41 @@ class SiopServiceImpl(
      * can be received as a result of a previous method - getSiopAuthenticationRequestInJwsFormat() - or
      * as a result of the identification of QR content.
      */
-    override fun processSiopAuthenticationRequest(siopAuthenticationRequest: String): VcSelectorRequestDTO {
+    override fun processSiopAuthenticationRequest(siopAuthenticationRequest: String, token: String): VcSelectorRequestDTO {
 
         val parsedSiopAuthenticationRequest = ApplicationUtils.parseOpenIdConfig(siopAuthenticationRequest)
 
         // Extract the scope claim of the SIOP Authentication Request
-        val scopeList = parserScopeListToString(extractScopeClaimOfTheSiopAuthRequest(siopAuthenticationRequest))
+        val scopeList = extractScopeClaimOfTheSiopAuthRequest(siopAuthenticationRequest)
+
+        val selectableVCsRequestDTO = parserSelectableVCToString(SelectableVCsRequestDTO(vcTypes = scopeList))
         // Find if User has a Verifiable Credential that matches with all the scopes requested
-        val headers = listOf( CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON)
-        val response = ApplicationUtils.postRequest(url = orionServiceBaseUrl, headers = headers, body = scopeList)
-        val valueTypeRef = ObjectMapper().typeFactory.constructType(VcBasicDataDTO::class.java)
-        val selectableVcList: List<VcBasicDataDTO> = ObjectMapper().readValue(response, valueTypeRef)
+        val headers = listOf(
+            CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON,
+            HEADER_AUTHORIZATION to "Bearer $token"
+        )
+        val url = walletDataBaseUrl + GET_SELECTABLE_VCS
+        val response = ApplicationUtils.postRequest(url = url, headers = headers, body = selectableVCsRequestDTO)
+
+        val valueTypeRef = ObjectMapper().typeFactory.constructType(Array<VcBasicDataDTO>::class.java)
+        val selectableVCsResponseDTO : Array<VcBasicDataDTO> = ObjectMapper().readValue(response, valueTypeRef)
 
         // Populate the response to the Wallet Front-End adding the SIOP Authentication Request and a List of the
         // Verifiable Credential IDs that match with the requested scope
         return VcSelectorRequestDTO(
             redirectUri = parsedSiopAuthenticationRequest.redirectUri,
             state = parsedSiopAuthenticationRequest.state,
-            selectableVcList = selectableVcList
+            selectableVcList = selectableVCsResponseDTO.toList()
         )
     }
 
     /**
-     * This method parser the scopeList to a String
-     * @param scopeList
+     * This method parser the selectableVCsRequestDTO to a String
+     * @param selectableVCsRequestDTO
      * @return String
      */
-    private fun parserScopeListToString(scopeList : List<String>): String {
-        return ObjectMapper().writeValueAsString(scopeList)
+    private fun parserSelectableVCToString(selectableVCsRequestDTO: SelectableVCsRequestDTO): String {
+        return ObjectMapper().writeValueAsString(selectableVCsRequestDTO)
     }
 
     override fun sendAuthenticationResponse(vcSelectorResponseDTO: VcSelectorResponseDTO, vp: String): String {
