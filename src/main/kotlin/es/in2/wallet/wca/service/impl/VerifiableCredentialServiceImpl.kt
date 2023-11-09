@@ -255,8 +255,8 @@ class VerifiableCredentialServiceImpl(
             HEADER_AUTHORIZATION to "Bearer $token"
         )
         val response : String = postRequest(url=url, headers = headers, body = credentialRequestDTO.did)
-        val valueTypeRef = ObjectMapper().typeFactory.constructType(ECKey::class.java)
-        val ecJWK: ECKey = ObjectMapper().readValue(response, valueTypeRef)
+        //val valueTypeRef = ObjectMapper().typeFactory.constructType(ECKey::class.java)
+        val ecJWK: ECKey = JWK.parse(response).toECKey()
         log.debug("ECKey: {}", ecJWK)
         */
         ServiceMatrix(SERVICE_MATRIX)
@@ -267,11 +267,6 @@ class VerifiableCredentialServiceImpl(
         val jwk = KeyService.getService().export(did, KeyFormat.JWK, KeyType.PRIVATE)
         println(jwk)
         val ecJWK: ECKey = JWK.parse(jwk).toECKey()
-        //println(ecJWK.toString())
-        /*
-        val jwk = "{\"kty\":\"EC\",\"d\":\"7reVTexA-SQs_VRiK_bGKhJdq2PGC2HhCYGj-tU0xsE\",\"use\":\"sig\",\"crv\":\"P-256\",\"kid\":\"ee64cc7fed6f46348cb19bcf7bb5d2fe\",\"x\":\"TYalWALxTfoxv_vTIGwH-8gKgK-t077xBC-nSNP7xso\",\"y\":\"kXTM_GCt7RLxm2OhKoK_Jf5EsaMh3maf7L32kxgzPHA\",\"alg\":\"ES256\"}"
-        val ecJWK: ECKey = JWK.parse(jwk).toECKey()
-*/
         val signer: JWSSigner = ECDSASigner(ecJWK)
 
         val header = createJwtHeader(credentialRequestDTO.did)
