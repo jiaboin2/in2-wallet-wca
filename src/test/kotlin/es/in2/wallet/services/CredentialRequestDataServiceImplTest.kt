@@ -32,9 +32,9 @@ class CredentialRequestDataServiceImplTest {
     @Test
     fun testSaveCredentialRequestData_CredentialRequestDataNotFoundException() {
         val issuerName = "issuer"
+        val userId = UUID.randomUUID()
         val issuerNonce = "nonce"
         val issuerAccessToken = "token"
-        val userId = UUID.randomUUID()
 
         `when`(credentialRequestDataRepository.findAppCredentialRequestDataByIssuerNameAndUserId(issuerName, userId.toString()))
             .thenReturn(Optional.empty())

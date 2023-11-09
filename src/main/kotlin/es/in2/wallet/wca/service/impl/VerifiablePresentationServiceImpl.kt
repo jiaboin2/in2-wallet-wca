@@ -1,14 +1,19 @@
 package es.in2.wallet.wca.service.impl
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.nimbusds.jwt.SignedJWT
 import es.in2.wallet.wca.model.dto.VcSelectorResponseDTO
 import es.in2.wallet.wca.service.VerifiablePresentationService
-import es.in2.wallet.wca.model.dto.VerifiableCredentialByIdAndFormatRequestDTO
 import es.in2.wallet.wca.util.*
 import id.walt.credentials.w3c.PresentableCredential
 import id.walt.credentials.w3c.VerifiableCredential
+import id.walt.crypto.KeyAlgorithm
 import id.walt.custodian.Custodian
+import id.walt.model.DidMethod
+import id.walt.servicematrix.ServiceMatrix
+import id.walt.services.did.DidService
+import id.walt.services.key.KeyFormat
+import id.walt.services.key.KeyService
+import id.walt.services.keystore.KeyType
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -19,6 +24,7 @@ import java.time.Instant
 class VerifiablePresentationServiceImpl(
     @Value("\${app.url.wallet-data-baseurl}") private val walletDataBaseUrl: String,
     @Value("\${app.url.wallet-crypto-baseurl}") private val walletCryptoBaseUrl: String,
+    private val applicationUtils: ApplicationUtils
 ) : VerifiablePresentationService {
 
     private val log: Logger = LogManager.getLogger(VerifiablePresentationServiceImpl::class.java)
@@ -28,16 +34,12 @@ class VerifiablePresentationServiceImpl(
         // Get vc_jwt list from the selected list of VCs received
         val verifiableCredentialsList = mutableListOf<PresentableCredential>()
         vcSelectorResponseDTO.selectedVcList.forEach {
-            val url = walletCryptoBaseUrl + GET_VC_BY_ID_FORMAT
+            val url = walletDataBaseUrl + GET_VC_BY_ID_FORMAT + "?credentialId=" + it.id + "&format=vc_jwt"
             val headers = listOf(
                 CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON,
                 HEADER_AUTHORIZATION to "Bearer $token"
             )
-            val vc = parserVerifiableCredentialIdAndFormatRequestToString(VerifiableCredentialByIdAndFormatRequestDTO(
-                id = it.id,
-                format = VC_JWT
-            ))
-            val response = ApplicationUtils.postRequest(url = url, headers = headers, body = vc)
+            val response = applicationUtils.getRequest(url = url, headers = headers)
             log.info("verifiable credential by Id and Format = {}", response)
             verifiableCredentialsList.add(
                 PresentableCredential(
@@ -55,13 +57,21 @@ class VerifiablePresentationServiceImpl(
             subject_id of, at least, one of the VCs attached.
             That VP MUST be signed using the PrivateKey related with the holderDID.
          */
+
+/*
         val url = walletCryptoBaseUrl + GET_DID_KEY
         val headers = listOf(
             CONTENT_TYPE to CONTENT_TYPE_APPLICATION_JSON,
             HEADER_AUTHORIZATION to "Bearer $token"
         )
-        val holderDid = ApplicationUtils.postRequest(url = url, headers = headers, body = "")
+        val holderDid = applicationUtils.postRequest(url = url, headers = headers, body = "")
+*/
 
+        log.info("Key Service - Generate Key")
+        ServiceMatrix(SERVICE_MATRIX)
+        val keyId = KeyService.getService().generate(KeyAlgorithm.ECDSA_Secp256r1)
+        log.info("KeyId = {}", keyId)
+        val holderDid = DidService.create(DidMethod.key, keyId.id)
         /*
             The holder SHOULD be able to modify the attribute 'expiration_date' by any of its
             Verifiable Presentation.
@@ -73,15 +83,6 @@ class VerifiablePresentationServiceImpl(
             holderDid = holderDid,
             expirationDate = Instant.now().plusSeconds(secondsToAdd)
         )
-    }
-
-    /**
-     * This method parser the VerifiableCredentialByIdAndFormatRequestDTO to a String
-     * @param verifiableCredentialByIdAndFormatRequest
-     * @return String
-     */
-    private fun parserVerifiableCredentialIdAndFormatRequestToString(verifiableCredentialByIdAndFormatRequest : VerifiableCredentialByIdAndFormatRequestDTO): String {
-        return ObjectMapper().writeValueAsString(verifiableCredentialByIdAndFormatRequest)
     }
 
     private fun getSubjectDidFromTheFirstVcOfTheList(verifiableCredentialsList: MutableList<PresentableCredential>): String {

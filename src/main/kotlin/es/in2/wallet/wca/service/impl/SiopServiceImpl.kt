@@ -34,6 +34,8 @@ class SiopServiceImpl(
         // get SIOP Authentication Request as JWT in JWS form by executing the received URI
         val jwtSiopAuthRequest = getSiopAuthenticationRequestInJwsFormat(siopAuthenticationRequestUri)
 
+        println(jwtSiopAuthRequest)
+
         // verify the received response
         tokenVerificationService.verifySiopAuthRequestAsJwsFormat(jwtSiopAuthRequest)
 
@@ -54,7 +56,7 @@ class SiopServiceImpl(
      */
     override fun processSiopAuthenticationRequest(siopAuthenticationRequest: String, token: String): VcSelectorRequestDTO {
 
-        val parsedSiopAuthenticationRequest = ApplicationUtils.parseOpenIdConfig(siopAuthenticationRequest)
+        val parsedSiopAuthenticationRequest = applicationUtils.parseOpenIdConfig(siopAuthenticationRequest)
 
         // Extract the scope claim of the SIOP Authentication Request
         val scopeList = extractScopeClaimOfTheSiopAuthRequest(siopAuthenticationRequest)
@@ -66,7 +68,7 @@ class SiopServiceImpl(
             HEADER_AUTHORIZATION to "Bearer $token"
         )
         val url = walletDataBaseUrl + GET_SELECTABLE_VCS
-        val response = ApplicationUtils.postRequest(url = url, headers = headers, body = selectableVCsRequestDTO)
+        val response = applicationUtils.postRequest(url = url, headers = headers, body = selectableVCsRequestDTO)
 
         val valueTypeRef = ObjectMapper().typeFactory.constructType(Array<VcBasicDataDTO>::class.java)
         val selectableVCsResponseDTO : Array<VcBasicDataDTO> = ObjectMapper().readValue(response, valueTypeRef)
@@ -107,7 +109,7 @@ class SiopServiceImpl(
         log.info("RedirectUri: "+vcSelectorResponseDTO.redirectUri)
         log.info("FormData: $formData")
         val headers = listOf(CONTENT_TYPE to CONTENT_TYPE_URL_ENCODED_FORM)
-        val response = ApplicationUtils.postRequest(url=vcSelectorResponseDTO.redirectUri,
+        val response = applicationUtils.postRequest(url=vcSelectorResponseDTO.redirectUri,
             headers=headers, body=formData)
         log.info("response body = {}", response)
         // access_token returned

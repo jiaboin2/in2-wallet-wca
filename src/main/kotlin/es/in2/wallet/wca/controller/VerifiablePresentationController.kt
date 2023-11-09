@@ -45,6 +45,7 @@ class VerifiablePresentationController(
         // create a verifiable presentation
         log.info("Creating Verifiable Presentation...")
         val verifiablePresentation = verifiablePresentationService.createVerifiablePresentation(vcSelectorResponseDTO, token)
+        println(verifiablePresentation)
         // send the verifiable presentation to the dome backend
         log.info("Sending Authentication Response using RedirectUri...")
         return siopService.sendAuthenticationResponse(vcSelectorResponseDTO, verifiablePresentation)

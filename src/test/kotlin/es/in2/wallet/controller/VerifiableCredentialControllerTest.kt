@@ -50,7 +50,7 @@ class VerifiableCredentialControllerTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/credentials")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ObjectMapper().writeValueAsString(credentialRequestDTO))
         )
@@ -63,11 +63,11 @@ class VerifiableCredentialControllerTest {
 
         val qrContentDTO = QrContentDTO(content = "http://issuer-api:8081/credential-offer?credential_offer_uri=http://issuer-api:8081/credential-offer/k-un2ZiMSiKEpXQXqKScPg")
         val token = "token"
-        Mockito.doNothing().`when`(verifiableCredentialService).getCredentialIssuerMetadata("{\"qr_content\":\"${qrContentDTO.content}\"}", token)
+        Mockito.doNothing().`when`(verifiableCredentialService).getCredentialIssuerMetadata(qrContentDTO.content, token)
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/credentials/issuer-metadata")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"qr_content\":\"$qrContentDTO.content\"}")
         )

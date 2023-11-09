@@ -8,4 +8,4 @@ const val SAVE_CREDENTIAL = "/api/credentials"
 
 const val GET_SELECTABLE_VCS = "/api/credentials/types"
 
-const val GET_VC_BY_ID_FORMAT = "api/credentials"
+const val GET_VC_BY_ID_FORMAT = "/api/credentials/id"

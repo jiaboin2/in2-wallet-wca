@@ -1,6 +1,6 @@
 spring:
   application:
-    name: WalletWCA
+    name: WalletCreationApplication
   datasource:
     url: jdbc:h2:mem:dbtest
     driver-class-name: org.h2.Driver
@@ -15,23 +15,50 @@ spring:
       ddl-auto: update
     show-sql: true
     generate-ddl: true
-  security:
-    user:
-      name: in2test
-      password: in2pass
+
 
 server:
   port: 8083
-
-in2:
-  openapi:
-    local-url: http://localhost:8083
-    dev-url: https://walletapidev.in2.es
 
 app:
   url:
     api: http://localhost:8083
     wallet-data-baseurl: http://localhost:8086
     wallet-crypto-baseurl: http://localhost:8089
-    orion_context_broker: http://localhost:1026/v2/entities
 
+# Logging configuration
+logging:
+  level:
+    # Set the log level for the entire application
+    root: INFO
+    # Set log level for specific packages or classes
+    es.in2.wallet.wca.service: DEBUG
+    es.in2.wallet.wca.util: DEBUG
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health
+      base-path: /
+      path-mapping:
+        health: health
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /spring-ui
+    tags-sorter: alpha
+    operations-sorter: method
+
+in2:
+  openapi:
+    server:
+      url: http://localhost:8083
+      description: Spring Wallet Creation Application

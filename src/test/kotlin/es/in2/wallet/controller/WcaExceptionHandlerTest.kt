@@ -49,4 +49,11 @@ class WcaExceptionHandlerTest {
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
+    @Test
+    fun `testHandleNoAuthorizationFoundException should return 400 BAD_REQUEST`() {
+        val exception = InvalidTokenException("No authorization")
+        val response = WcaExceptionHandler().handleNoAuthorizationFoundException(exception)
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
 }

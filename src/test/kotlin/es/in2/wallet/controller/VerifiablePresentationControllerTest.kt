@@ -69,7 +69,7 @@ class VerifiablePresentationControllerTest {
         // Perform the POST request and assert the response
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/vp")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"redirectUri\":\"http://portal-api:8082/api/verifier/siop-sessions\"," +
                         "\"state\":\"gFfLfeHuTouHjDwoe9vvQw\"," +
@@ -79,8 +79,6 @@ class VerifiablePresentationControllerTest {
                         "\"credentialSubject\":\"default data\"}]}")
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
-
-        // Add additional assertions as needed
     }
 
 }
